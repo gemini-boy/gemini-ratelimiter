@@ -3,6 +3,7 @@ package com.cloud.gemini.aspect;
 import com.cloud.gemini.algorithm.CounterRateLimter;
 import com.cloud.gemini.algorithm.TokenBucketRateLimiter;
 import com.cloud.gemini.annotation.RateLimit;
+import com.cloud.gemini.common.ResolverEnum;
 import com.cloud.gemini.util.RateLimitUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -10,6 +11,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,6 +28,9 @@ public class RateLimitAspect {
 
     @Autowired
     TokenBucketRateLimiter tokenBucketRateLimiter;
+
+    @Value("${gemini.resolver:redis}")
+    private String resolverType;
 
 
     /**
@@ -46,15 +51,17 @@ public class RateLimitAspect {
     public void doBefore(JoinPoint joinPoint, RateLimit rateLimit) {
 
         String key = RateLimitUtil.generateKey(joinPoint, rateLimit.limitKey());
+
         switch (rateLimit.algorithm() ) {
             case Counter:
-                counterRateLimter.countLimit(key, rateLimit.limitTime(), rateLimit.interval());
+                counterRateLimter.countLimit(key, rateLimit.limitTime(), rateLimit.interval(), ResolverEnum.getResolverByName(resolverType));
                 break;
             case TokenBucket:
-                tokenBucketRateLimiter.bucketTokenLimit(key, rateLimit.limitTime(), rateLimit.tokenBucketStepNum(), rateLimit.tokenBucketTimeInterval());
+                tokenBucketRateLimiter.bucketTokenLimit(key, rateLimit.limitTime(), rateLimit.tokenBucketStepNum(), rateLimit.tokenBucketTimeInterval(), ResolverEnum.getResolverByName(resolverType));
                 break;
             default:
         }
+
 
     }
 

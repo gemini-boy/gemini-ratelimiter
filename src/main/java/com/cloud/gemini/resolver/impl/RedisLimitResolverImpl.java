@@ -2,7 +2,7 @@ package com.cloud.gemini.resolver.impl;
 
 import com.cloud.gemini.common.RateLimitConstant;
 import com.cloud.gemini.exception.RateLimitException;
-import com.cloud.gemini.resolver.RateLimitResolver;
+import com.cloud.gemini.resolver.RedisLimitResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -14,7 +14,7 @@ import java.util.List;
  * created by fufan on 2019-07-12 11:20
  **/
 
-public class RedisResolver extends RateLimitResolver {
+public class RedisLimitResolverImpl implements RedisLimitResolver {
 
     @Autowired
     RedisTemplate redisTemplate;
@@ -23,8 +23,8 @@ public class RedisResolver extends RateLimitResolver {
 
     DefaultRedisScript<Long> tokenScript;
 
-    public RedisResolver(DefaultRedisScript<Long> countScript,
-                         DefaultRedisScript<Long> tokenScript) {
+    public RedisLimitResolverImpl(DefaultRedisScript<Long> countScript,
+                                  DefaultRedisScript<Long> tokenScript) {
         this.countScript = countScript;
         this.tokenScript = tokenScript;
     }

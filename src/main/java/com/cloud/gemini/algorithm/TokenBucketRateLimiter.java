@@ -1,5 +1,7 @@
 package com.cloud.gemini.algorithm;
 
+import com.cloud.gemini.common.ResolverEnum;
+
 /**
  * created by fufan on 2019-07-12 18:21
  **/
@@ -12,5 +14,5 @@ public interface TokenBucketRateLimiter {
      * @param tokenBucketStepNum
      * @param tokenBucketTimeInterval
      */
-    public void bucketTokenLimit(String key, int bucketTokenNum, int tokenBucketStepNum, int tokenBucketTimeInterval);
+    public void bucketTokenLimit(String key, int bucketTokenNum, int tokenBucketStepNum, int tokenBucketTimeInterval, ResolverEnum resolverEnum);
 }

@@ -1,10 +1,12 @@
 package com.cloud.gemini.config;
 
-import com.cloud.gemini.resolver.RateLimitResolver;
-import com.cloud.gemini.resolver.impl.GuavaResolver;
-import com.cloud.gemini.resolver.impl.RedisResolver;
+import com.cloud.gemini.resolver.GuavaLimitResolver;
+import com.cloud.gemini.resolver.RedisLimitResolver;
+import com.cloud.gemini.resolver.impl.GuavaLimitResolverImpl;
+import com.cloud.gemini.resolver.impl.RedisLimitResolverImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,16 +36,24 @@ public class GenminiRateLimitConfiguration {
         return template;
     }
 
+    @Bean(name= "guavaLimitResolver")
+//    @ConditionalOnProperty(prefix = "gemini", value = "resolver", havingValue = "guava")
+    public GuavaLimitResolver guavaResolver() {
 
-    @Bean(name = "rateLimitResolver")
-    public RateLimitResolver redisResolver() {
+        return new GuavaLimitResolverImpl();
+    }
+
+
+    @Bean(name = "redisLimitResolver")
+//    @ConditionalOnProperty(prefix = "gemini", value = "resolver", havingValue = "redis")
+    public RedisLimitResolver redisResolver() {
         DefaultRedisScript<Long> countScript =new DefaultRedisScript();
         DefaultRedisScript<Long> tokenScript =new DefaultRedisScript();
         countScript.setResultType(Long.class);
         countScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/redis-ratelimiter-counter.lua")));
         tokenScript.setResultType(Long.class);
         tokenScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/redis-ratelimiter-tokenBucket.lua")));
-        return new RedisResolver(countScript, tokenScript);
+        return new RedisLimitResolverImpl(countScript, tokenScript);
     }
 
 

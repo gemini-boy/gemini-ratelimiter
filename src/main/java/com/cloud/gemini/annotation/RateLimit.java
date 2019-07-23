@@ -26,8 +26,6 @@ public @interface RateLimit {
 
     public String limitKey() default "all";
 
-    public ResolverEnum resolverEnum();
-
 //    public String limitFunction();
 //
 //
